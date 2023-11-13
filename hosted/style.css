@@ -47,10 +47,10 @@ nav:nth-child(1) {
     background-color: #66bdff;
 }
 
-.domoForm {
+.domoForm .userForm {
     border: 2px solid #338acc;
     height: 35px;
-    width: 700px;
+    width: 1000px;
     margin-top:0px;
     padding-top:10px;
     background-color: #55acee;
@@ -67,7 +67,16 @@ nav:nth-child(1) {
     color: white;
 }
 
-.domoForm input[type=text] {
+.userForm label {
+    display: inline-block;
+    width: 75px;
+    margin-left: 10px;
+    font-size: 1.2em;
+    float: left;
+    color: white;
+}
+
+.domoForm .userForm input[type=text] {
     float:left;
 }
 
@@ -247,7 +256,7 @@ h3.domoName {
     font-size: 1.5em;
 }
 
-h3.domoAge {
+h3.domoAge h3.domoColor {
     float:right;
     text-align: left;
     width: 100px;

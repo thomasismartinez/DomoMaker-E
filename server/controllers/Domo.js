@@ -9,20 +9,24 @@ const makerPage = async (req, res) => {
 
 const makeDomo = async (req, res) => {
   console.log('entering Domo.js > makeDomo');
-  if (!req.body.name || !req.body.age) {
-    return res.status(400).json({ error: 'Both name and age are required!' });
+  console.log(req.body.name + req.body.color + req.body.age)
+  if (!req.body.name || !req.body.color || !req.body.age) {
+    return res.status(400).json({ error: 'Name, color, and age are required!' });
   }
 
   const domoData = {
     name: req.body.name,
+    color: req.body.color,
     age: req.body.age,
     owner: req.session.account._id,
   };
 
+  console.log(domoData);
+
   try {
     const newDomo = new Domo(domoData);
     await newDomo.save();
-    return res.status(201).json({ name: newDomo.name, age: newDomo.age });
+    return res.status(201).json({ name: newDomo.name, color: newDomo.color, age: newDomo.age });
   } catch (err) {
     console.log(err);
     if (err.code === 11000) {
@@ -36,7 +40,7 @@ const getDomos = async (req, res) => {
   console.log('entering domos.js > getDomos');
   try {
     const query = { owner: req.session.account._id };
-    const docs = await Domo.find(query).select('name age').lean().exec();
+    const docs = await Domo.find(query).select('name color age').lean().exec();
 
     return res.json({ domos: docs });
   } catch (err) {
