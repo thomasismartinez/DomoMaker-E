@@ -9,7 +9,7 @@ const makerPage = async (req, res) => {
 
 const makeDomo = async (req, res) => {
   console.log('entering Domo.js > makeDomo');
-  console.log(req.body.name + req.body.color + req.body.age)
+  console.log(req.body.name + req.body.color + req.body.age);
   if (!req.body.name || !req.body.color || !req.body.age) {
     return res.status(400).json({ error: 'Name, color, and age are required!' });
   }
@@ -36,8 +36,10 @@ const makeDomo = async (req, res) => {
   }
 };
 
-const getDomos = async (req, res) => {
-  console.log('entering domos.js > getDomos');
+const getDomos = async (req, res, params) => {
+  console.log('entering domos.js');
+  console.log(req.body.username);
+  console.log(params.username);
   try {
     const query = { owner: req.session.account._id };
     const docs = await Domo.find(query).select('name color age').lean().exec();

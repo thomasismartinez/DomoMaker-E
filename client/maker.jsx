@@ -15,48 +15,69 @@ const handleDomo = (e) => {
         return false;
     }
 
-    helper.sendPost(e.target.action, {name, color, age}, loadDomosFromServer);
+    helper.sendPost(e.target.action, {name, color, age}, () => { loadDomosFromServer(name) } );
 
     return false;
 };
 
 const DomoForm = (props) => {
     return (
-        <form id="domoForm"
-            onSubmit={handleDomo}
-            name="domoForm"
-            action="/maker"
-            method="POST"
-            className="domoForm"
-        >
-            <label htmlFor='name'>Name</label>
-            <input id='domoName' type='text' name='name' placeholder='Domo Name'/>
-            <label htmlFor='color'>Color</label>
-            <input id='domoColor' type='text' name='color' placeholder='Domo Color'/>
-            <label htmlFor='age'>Age</label>
-            <input id='domoAge' type='number' min='0' name='age'/>
-            <input className='makeDomoSubmit' type='submit' value='Make Domo'/>
-        </form>
+        <div>
+            <h2>Create Your Own Domo</h2>
+            <form id="domoForm"
+                onSubmit={handleDomo}
+                name="domoForm"
+                action="/maker"
+                method="POST"
+                className="domoForm"
+            >
+                <label htmlFor='name'>Name</label>
+                <input id='domoName' type='text' name='name' placeholder='Domo Name'/>
+                <label htmlFor='color'>Color</label>
+                <input id='domoColor' type='text' name='color' placeholder='Domo Color'/>
+                <label htmlFor='age'>Age</label>
+                <input id='domoAge' type='number' min='0' name='age'/>
+                <input className='makeDomoSubmit' type='submit' value='Make Domo'/>
+            </form>
+        </div>
     );
 };
 
 const UserForm = (props) => {
     return (
-        <form id="usersForm"
-            onSubmit={handleUsers}
-            name="usersForm"
-            action="/getUsers"
-            method="GET"
-            className="domoForm"
-        >
-            <label htmlFor='name'>Search User</label>
-            <input id='userName' type='text' name='name' placeholder='User Name'/>
-            <input className='makeDomoSubmit' type='submit' value='Search User'/>
-        </form>
+        <div>
+            <h2>See Other User's Collection</h2>
+            <form id="usersForm"
+                onSubmit={handleUser}
+                name="usersForm"
+                action="/getUser"
+                method="GET"
+                className="domoForm"
+            >
+                <label id='userFormLabel' htmlFor='name'>User Name</label>
+                <input id='userName' type='text' name='name' placeholder='User Name'/>
+                <input className='makeDomoSubmit' type='submit' value='Search User'/>
+            </form>
+        </div>
     );
 };
 
-const handleUsers = () => {}
+const handleUser = (e) => {
+    console.log('entering maker.jsx > handleUser')
+    e.preventDefault();
+    helper.hideError();
+
+    const name = e.target.querySelector('#userName').value;
+
+    if(!name) {
+        helper.handleError('Name field required!');
+        return false;
+    }
+
+    loadDomosFromServer(name)
+
+    return false;
+}
 
 const DomoList = (props) => {
     console.log(props);
@@ -86,9 +107,12 @@ const DomoList = (props) => {
     )
 };
 
-const loadDomosFromServer = async () => {
+const loadDomosFromServer = async (name) => {
     console.log('loading domos from server');
-    const response = await fetch('/getDomos');
+
+    const response = await fetch('/getDomos?' + new URLSearchParams({
+        username: name,
+    }));
     const data = await response.json();
     ReactDOM.render(
         <DomoList domos={data.domos}/>,

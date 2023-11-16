@@ -47,7 +47,7 @@ nav:nth-child(1) {
     background-color: #66bdff;
 }
 
-.domoForm .userForm {
+.domoForm {
     border: 2px solid #338acc;
     height: 35px;
     width: 1000px;
@@ -67,16 +67,11 @@ nav:nth-child(1) {
     color: white;
 }
 
-.userForm label {
-    display: inline-block;
-    width: 75px;
-    margin-left: 10px;
-    font-size: 1.2em;
-    float: left;
-    color: white;
+#userFormLabel {
+    width: 100px;
 }
 
-.domoForm .userForm input[type=text] {
+.domoForm input[type=text] {
     float:left;
 }
 
