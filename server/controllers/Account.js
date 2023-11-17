@@ -67,9 +67,34 @@ const signup = async (req, res) => {
   }
 };
 
+const getUidFromName = async (req, res) => {
+  console.log(`entering Account Controller > getUidFromName`);
+  const userQuery = req.query.user;
+  console.log(`getting userId from name: ${req.query.user}`);
+  try {
+    const query = { username: userQuery };
+    
+    const account = await Account.findOne(query).select('username').lean().exec();
+    console.log('account: ' + JSON.stringify(account));
+
+    if (account == null) {
+      return res.status(404).json({ error: 'User not found!' });
+    }
+
+    const userId = account._id;
+    console.log('userId: ' + userId);
+
+    return res.json({ userId });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Error retrieving user id!' });
+  }
+}
+
 module.exports = {
   loginPage,
   login,
   logout,
   signup,
+  getUidFromName,
 };

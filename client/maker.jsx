@@ -15,7 +15,9 @@ const handleDomo = (e) => {
         return false;
     }
 
-    helper.sendPost(e.target.action, {name, color, age}, () => { loadDomosFromServer(name) } );
+    helper.sendPost(e.target.action, {name, color, age}, () => { loadDomosFromServer('LOGGEDINUSER') } );
+
+    document.getElementById('whosecollection').innerHTML = `Your Collection:`;
 
     return false;
 };
@@ -43,26 +45,7 @@ const DomoForm = (props) => {
     );
 };
 
-const UserForm = (props) => {
-    return (
-        <div>
-            <h2>See Other User's Collection</h2>
-            <form id="usersForm"
-                onSubmit={handleUser}
-                name="usersForm"
-                action="/getUser"
-                method="GET"
-                className="domoForm"
-            >
-                <label id='userFormLabel' htmlFor='name'>User Name</label>
-                <input id='userName' type='text' name='name' placeholder='User Name'/>
-                <input className='makeDomoSubmit' type='submit' value='Search User'/>
-            </form>
-        </div>
-    );
-};
-
-const handleUser = (e) => {
+const handleUser = async (e) => {
     console.log('entering maker.jsx > handleUser')
     e.preventDefault();
     helper.hideError();
@@ -74,10 +57,44 @@ const handleUser = (e) => {
         return false;
     }
 
-    loadDomosFromServer(name)
+    const response = await fetch('/getUid?' + new URLSearchParams({
+        user:  name
+    }));
+    const data = await response.json();
+    const uid = data.userId;
+
+    if (!uid) {
+        helper.handleError('Couldn\'t find user!');
+        return false;
+    }
+
+    //console.log('response stringified: ' + JSON.stringify(userId));
+
+    loadDomosFromServer(uid);
+
+    document.getElementById('whosecollection').innerHTML = `${name}'s Collection`;
 
     return false;
 }
+
+const UserForm = (props) => {
+    return (
+        <div>
+            <h2>See Other User's Collection</h2>
+            <form id="usersForm"
+                onSubmit={handleUser}
+                name="usersForm"
+                action="/maker"
+                method="GET"
+                className="domoForm"
+            >
+                <label id='userFormLabel' htmlFor='name'>User Name</label>
+                <input id='userName' type='text' name='name' placeholder='User Name'/>
+                <input className='makeDomoSubmit' type='submit' value='Search User'/>
+            </form>
+        </div>
+    );
+};
 
 const DomoList = (props) => {
     console.log(props);
@@ -107,11 +124,11 @@ const DomoList = (props) => {
     )
 };
 
-const loadDomosFromServer = async (name) => {
-    console.log('loading domos from server');
+const loadDomosFromServer = async (id) => {
+    console.log('loading domos from server with owner: ' + id);
 
     const response = await fetch('/getDomos?' + new URLSearchParams({
-        username: name,
+        userId: id,
     }));
     const data = await response.json();
     ReactDOM.render(
@@ -119,6 +136,15 @@ const loadDomosFromServer = async (name) => {
         document.getElementById('domos')
     );
 };
+
+const loadUserIdFromServer = async (username) => {
+    console.log('loading user id from server');
+
+    const response = await fetch('/getNameFromId?' + new URLSearchParams({
+        username: ObjectId('65518578d9789babadb5cde7') //jack's id temp
+    }));
+    const data = await response.json();
+}
 
 const init = () => {
     console.log('entering maker.jsx > init()')
@@ -137,7 +163,9 @@ const init = () => {
         document.getElementById('domos')
     );
 
-    loadDomosFromServer();
+    document.getElementById('whosecollection').innerHTML = `Your Collection:`;
+
+    loadDomosFromServer('LOGGEDINUSER');
 
     window.onload = init;
 }

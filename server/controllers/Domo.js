@@ -2,6 +2,8 @@ const models = require('../models');
 
 const { Domo } = models;
 
+//const getUidFromName = require('./Account.js').getUidFromName;
+
 const makerPage = async (req, res) => {
   console.log('rendering maker page');
   return res.render('app');
@@ -36,12 +38,20 @@ const makeDomo = async (req, res) => {
   }
 };
 
-const getDomos = async (req, res, params) => {
-  console.log('entering domos.js');
-  console.log(req.body.username);
-  console.log(params.username);
+const getDomos = async (req, res) => {
+  console.log(`entering Domo Controller > getDomos`);
+  let searchUid = '';
+  if (req.query.userId === 'LOGGEDINUSER') {
+    //uid is UNDEFINED, using CURRENT user
+    searchUid = req.session.account._id;
+  }
+  else {
+    //uid is DEFINED, using GIVEN user'
+    searchUid = req.query.userId;
+  }
+  console.log('querying = ' + searchUid);
   try {
-    const query = { owner: req.session.account._id };
+    const query = { owner: searchUid };
     const docs = await Domo.find(query).select('name color age').lean().exec();
 
     return res.json({ domos: docs });
